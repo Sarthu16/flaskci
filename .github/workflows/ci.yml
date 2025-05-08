@@ -24,5 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Debug path
+        run: |
+          pwd
+          ls -la
+          ls -la app
+          echo "PYTHONPATH: $PYTHONPATH"
+
       - name: Run tests
-        run: PYTHONPATH=. pytest
+        run: PYTHONPATH=$(pwd) pytest
