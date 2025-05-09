@@ -2,7 +2,7 @@ name: CD - Deploy Flask App via Docker
 
 on:
   push:
-    branches:
+    branches: 
       - main  # Deploys only on push to main branch
 
 jobs:
