@@ -4,4 +4,4 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def home():
-    return "Hello, Flask CI/CD! web app made change"
+    return "Hello, Flask CI/CD! web app made changes"
