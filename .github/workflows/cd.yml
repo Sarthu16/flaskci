@@ -3,7 +3,7 @@ name: CD - Deploy Flask App via Docker
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to main branch
+      - main  # Deploys only on push to main branch
 
 jobs:
   deploy:
@@ -16,28 +16,26 @@ jobs:
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.deploy_key }}
+          ssh-private-key: ${{ secrets.depoly_key }}
 
-      - name: Deploy on server
+      - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.233.27.23 << 'EOF'
-            # Clone the repo if not already present
-            if [ ! -d "flaskci" ]; then
-              git clone https://github.com/Sarthu16/flaskci
-            fi
-            cd flask-sample-app
+            cd ~/flaskci
 
-            # Reset to the latest commit on main branch
-            git fetch origin main
-            git reset --hard origin/main
+            echo "Pulling latest code..."
+            git pull origin main
 
-            # Stop and remove existing container if running
+            echo "Stopping and removing old container..."
             docker stop flask-app || true
             docker rm flask-app || true
 
-            # Rebuild image without cache
+            echo "Removing old Docker image..."
+            docker rmi flask-app || true
+
+            echo "Building Docker image..."
             docker build --no-cache -t flask-app .
 
-            # Run container mapping port 80 on host to port 5000 in container
+            echo "Running updated container..."
             docker run -d -p 80:5000 --name flask-app flask-app
           EOF
