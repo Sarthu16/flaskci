@@ -3,7 +3,7 @@ name: CD - Deploy Flask App via Docker
 on:
   push:
     branches:
-      - main  # Change this if you deploy from a different branch
+      - main  # Trigger deployment on push to main branch
 
 jobs:
   deploy:
@@ -21,10 +21,23 @@ jobs:
       - name: Deploy on server
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.233.27.23 << 'EOF'
-            cd ~/flaskci
-            git pull origin main
+            # Clone the repo if not already present
+            if [ ! -d "flaskci" ]; then
+              git clone https://github.com/Sarthu16/flaskci
+            fi
+            cd flask-sample-app
+
+            # Reset to the latest commit on main branch
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Stop and remove existing container if running
             docker stop flask-app || true
             docker rm flask-app || true
-            docker build -t flask-app .
+
+            # Rebuild image without cache
+            docker build --no-cache -t flask-app .
+
+            # Run container mapping port 80 on host to port 5000 in container
             docker run -d -p 80:5000 --name flask-app flask-app
           EOF
