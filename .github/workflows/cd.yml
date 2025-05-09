@@ -1,0 +1,30 @@
+name: CD - Deploy Flask App via Docker
+
+on:
+  push:
+    branches:
+      - main  # Change this if you deploy from a different branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.deploy_key }}
+
+      - name: Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.233.27.23 << 'EOF'
+            cd ~/flaskci
+            git pull origin main
+            docker stop flask-app || true
+            docker rm flask-app || true
+            docker build -t flask-app .
+            docker run -d -p 80:5000 --name flask-app flask-app
+          EOF
