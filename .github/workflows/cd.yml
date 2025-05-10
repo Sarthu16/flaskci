@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.233.27.23 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@3.110.154.189 << 'EOF'
             cd ~/flaskci
 
             echo "Pulling latest code..."
