@@ -16,11 +16,11 @@ jobs:
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.deploy_key }}
+          ssh-private-key: ${{ secrets.git_key }}
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@3.110.154.189 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.127.50.189 << 'EOF'
             cd ~/flaskci
 
             echo "Pulling latest code..."
